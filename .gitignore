@@ -1,0 +1,25 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+build/
+
+# local database (stats/match history)
+backend/data/
+
+# env & secrets
+.env
+.env.local
+.env.*.local
+
+# logs
+*.log
+npm-debug.log*
+
+# local tool state
+.claude/settings.local.json
+
+# OS junk
+.DS_Store
+Thumbs.db
