@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useGameStore } from "../../state/gameStore";
 import { getPlayerId, getSavedUsername } from "../../lib/identity";
+import { isUsernameAllowed } from "../../lib/usernameFilter";
 import type { PlayerStats } from "../../types";
 
 function formatDuration(ms: number | null): string {
@@ -13,6 +14,7 @@ export default function HomeScreen() {
   const [username, setUsername] = useState(getSavedUsername());
   const [stats, setStats] = useState<PlayerStats | null>(null);
   const [leaderboard, setLeaderboard] = useState<PlayerStats[]>([]);
+  const [nameError, setNameError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch(`/api/stats/${getPlayerId()}`)
@@ -25,7 +27,14 @@ export default function HomeScreen() {
       .catch(() => {});
   }, []);
 
-  const handlePlay = () => findMatch(username);
+  const handlePlay = () => {
+    if (!isUsernameAllowed(username)) {
+      setNameError("That name isn't allowed — pick something else.");
+      return;
+    }
+    setNameError(null);
+    findMatch(username);
+  };
 
   return (
     <div className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center gap-8 px-4 py-10">
@@ -47,11 +56,19 @@ export default function HomeScreen() {
           id="username"
           value={username}
           maxLength={20}
-          onChange={(e) => setUsername(e.target.value)}
+          onChange={(e) => {
+            setUsername(e.target.value);
+            setNameError(null);
+          }}
           onKeyDown={(e) => e.key === "Enter" && handlePlay()}
           placeholder="Enter a name…"
-          className="mt-2 w-full rounded-xl border border-white/10 bg-bg-soft px-4 py-3 text-slate-100 outline-none transition focus:border-accent/60 focus:ring-2 focus:ring-accent/30"
+          className={`mt-2 w-full rounded-xl border bg-bg-soft px-4 py-3 text-slate-100 outline-none transition focus:ring-2 ${
+            nameError
+              ? "border-rose-500/70 focus:border-rose-500 focus:ring-rose-500/30"
+              : "border-white/10 focus:border-accent/60 focus:ring-accent/30"
+          }`}
         />
+        {nameError && <p className="mt-2 text-sm text-rose-400">{nameError}</p>}
         <button
           onClick={handlePlay}
           className="mt-4 w-full rounded-xl bg-gradient-to-r from-accent to-accent-hot px-6 py-3.5 text-lg font-bold text-white shadow-lg shadow-accent/25 transition hover:brightness-110 active:scale-[0.98]"

@@ -4,6 +4,7 @@ import { matchmakingQueue } from "../matchmaking/queue.js";
 import { matchManager } from "../match/matchManager.js";
 import { playerStore } from "../players/playerStore.js";
 import { generateGuestName } from "../players/guestNames.js";
+import { isUsernameAllowed } from "../players/usernameFilter.js";
 import { recordMatchResult } from "../db/statsRepo.js";
 import { COUNTDOWN_MS, SOCKET_EVENTS } from "./events.js";
 import { buildGameOverPayload, buildGameStartPayload } from "./payloads.js";
@@ -14,7 +15,8 @@ const MAX_USERNAME_LENGTH = 20;
 
 function sanitizeUsername(raw: string | undefined): string {
   const trimmed = (raw ?? "").trim().slice(0, MAX_USERNAME_LENGTH);
-  return trimmed.length > 0 ? trimmed : generateGuestName();
+  if (trimmed.length === 0 || !isUsernameAllowed(trimmed)) return generateGuestName();
+  return trimmed;
 }
 
 function finishMatchAndPersist(match: Match, reason: GameOverReason, winner: MatchPlayer | null): void {
