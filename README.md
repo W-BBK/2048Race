@@ -2,17 +2,8 @@
 
 Real-time multiplayer 2048. Two players queue up, get matched, and race on identical rules — **the first player to build a 2048 tile wins instantly**. Both boards are visible live, with score, best tile, and move counts side by side.
 
-## Quick start
-
-```bash
-npm install
-npm run dev
-```
-
-Open **http://localhost:5173** in two browser windows (or two devices on your LAN), click **Find Match** in both, and race.
-
-- Frontend (Vite + React): http://localhost:5173
-- Backend (Express + Socket.IO): http://localhost:4000 (proxied through Vite in dev)
+## To Play
+- Visit two048race.onrender.com
 
 ## Controls
 
